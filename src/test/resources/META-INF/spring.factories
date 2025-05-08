@@ -1,0 +1,3 @@
+org.springframework.test.context.ContextCustomizerFactory = \
+    com.ideas2it.training.patient.metrics.config.\
+    TestContainersSpringContextCustomizerFactory

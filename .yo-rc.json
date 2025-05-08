@@ -1,0 +1,33 @@
+{
+  "generator-jhipster": {
+    "applicationType": "microservice",
+    "authenticationType": "jwt",
+    "baseName": "patientmetrics",
+    "buildTool": "maven",
+    "cacheProvider": "no",
+    "clientFramework": "no",
+    "clientTestFrameworks": null,
+    "clientTheme": null,
+    "creationTimestamp": 1746716966304,
+    "databaseType": "mongodb",
+    "devDatabaseType": null,
+    "enableHibernateCache": null,
+    "enableTranslation": false,
+    "entities": [],
+    "feignClient": false,
+    "jhipsterVersion": "8.10.0",
+    "jwtSecretKey": "M2JlNzU4NjUzZTdmYzAxOWM4OTg0Y2ZhY2VhZDI1ODhmMWIwYjJkNDExYjlhMmI3MTQ3ZWFkM2NhMjk4MGNhMDgxZTUzYTM0MTljY2Y3OTkwNmJkYjNhMzBkNDdiODRlMjA0YTdmM2M2ZTVhMjcwNTE3MTVmY2E0ZmU3OGJiMTQ=",
+    "microfrontend": null,
+    "microfrontends": [],
+    "nativeLanguage": "en",
+    "packageName": "com.ideas2it.training.patient.metrics",
+    "prodDatabaseType": null,
+    "reactive": false,
+    "serverPort": "9093",
+    "serviceDiscoveryType": "consul",
+    "skipClient": true,
+    "syncUserWithIdp": null,
+    "testFrameworks": [],
+    "withAdminUi": null
+  }
+}
