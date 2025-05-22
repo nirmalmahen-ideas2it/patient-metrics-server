@@ -21,7 +21,7 @@ public class AuditConsumer {
 
     @KafkaListener(topics = "audit-data", groupId = "audit-consumer-group")
     public void consumeAuditData(ConsumerRecord<String, String> record) throws JsonProcessingException {
-        String response=record.value();
+        String response = record.value();
         AuditPayload auditPayload = objectMapper.readValue(response, AuditPayload.class);
         repository.save(auditPayload);
         System.out.println("Consumed message: " + auditPayload);

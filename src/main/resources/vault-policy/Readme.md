@@ -73,7 +73,8 @@ This guide outlines the steps for enabling AppRole-based authentication and conf
 
 ## Step 5: Create/Update Policies
 
-1. Create the policy file `patientvitalmetricsapplication-policy.hcl` with the required capabilities. Below is an example
+1. Create the policy file `patientvitalmetricsapplication-policy.hcl` with the required capabilities. Below is an
+   example
    policy for
    reading and
    managing the secrets in `secret/patientvitalmetricsapplication/dev`:
@@ -102,7 +103,8 @@ This guide outlines the steps for enabling AppRole-based authentication and conf
     vault policy write patientvitalmetricsapplication-dev-policy /path/to/patientvitalmetricsapplication-dev-policy.hcl
     ```
 
-   **Note:** If you're running Vault in a container, copy the `patientvitalmetricsapplication-policy.hcl` file to the container
+   **Note:** If you're running Vault in a container, copy the `patientvitalmetricsapplication-policy.hcl` file to the
+   container
    first:
 
     ```bash

@@ -11,7 +11,6 @@ import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
 
 import java.io.Serializable;
-import java.time.Instant;
 import java.time.LocalDate;
 
 @Data
@@ -26,7 +25,7 @@ public class PatientInfoDocument implements Serializable {
     @Field(type = FieldType.Text)
     private String medicalRecordNumber;
     @Field(type = FieldType.Date, format = DateFormat.date, pattern = "yyyy-MM-dd")
-    private LocalDate  startOfCareDate;
+    private LocalDate startOfCareDate;
     private String status;
     @Field(type = FieldType.Text)
     private String firstName;

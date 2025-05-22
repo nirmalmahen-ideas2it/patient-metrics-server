@@ -1,10 +1,6 @@
 package com.ideas2it.training.patient.metrics.mapper;
 
-import com.ideas2it.training.patient.metrics.model.patient.PatientInfo;
-import com.ideas2it.training.patient.metrics.model.patient.PatientInfoDocument;
-import com.ideas2it.training.patient.metrics.model.patient.PhysicianInfo;
-import com.ideas2it.training.patient.metrics.model.patient.ReferralInfo;
-import com.ideas2it.training.patient.metrics.model.patient.Diagnoses;
+import com.ideas2it.training.patient.metrics.model.patient.*;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
@@ -21,7 +17,7 @@ class PatientInfoElasticsearchMapperTest {
         // Arrange
         ReferralInfo referralInfo = new ReferralInfo("Dr. Smith");
         Diagnoses diagnoses = new Diagnoses("Hypertension");
-        PhysicianInfo physicianInfo =PhysicianInfo.builder()
+        PhysicianInfo physicianInfo = PhysicianInfo.builder()
             .id(1L)
             .licenseNumber("12345")
             .name("Dr. John")

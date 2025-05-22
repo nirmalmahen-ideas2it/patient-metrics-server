@@ -15,6 +15,7 @@ public class RabbitConfig {
     public Jackson2JsonMessageConverter jackson2JsonMessageConverter() {
         return new Jackson2JsonMessageConverter();
     }
+
     @Bean
     public SimpleRabbitListenerContainerFactory rabbitListenerContainerFactory(
         ConnectionFactory connectionFactory,

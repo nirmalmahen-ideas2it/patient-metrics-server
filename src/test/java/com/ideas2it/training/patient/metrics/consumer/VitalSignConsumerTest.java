@@ -40,7 +40,7 @@ class VitalSignConsumerTest {
             "  },\n" +
             "  \"pulse\": 72\n" +
             "}";
-        VitalSignResponse vitalSignResponse =VitalSignResponse
+        VitalSignResponse vitalSignResponse = VitalSignResponse
             .builder()
             .id(1L)
             .patient(PatientInfo.builder().id(123L).build())
@@ -82,7 +82,7 @@ class VitalSignConsumerTest {
             "  },\n" +
             "  \"pulse\": 72\n" +
             "}";
-        VitalSignResponse vitalSignResponse =VitalSignResponse
+        VitalSignResponse vitalSignResponse = VitalSignResponse
             .builder()
             .id(1L)
             .patient(PatientInfo.builder().id(123L).build())

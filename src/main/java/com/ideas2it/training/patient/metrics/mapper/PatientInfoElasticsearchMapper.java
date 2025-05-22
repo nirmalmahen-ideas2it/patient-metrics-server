@@ -4,12 +4,7 @@ import com.ideas2it.training.patient.metrics.model.patient.PatientInfo;
 import com.ideas2it.training.patient.metrics.model.patient.PatientInfoDocument;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.mapstruct.Named;
 import org.mapstruct.factory.Mappers;
-
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.ZoneId;
 
 @Mapper(componentModel = "spring")
 public interface PatientInfoElasticsearchMapper {

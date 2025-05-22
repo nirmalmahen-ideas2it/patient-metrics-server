@@ -2,10 +2,12 @@ package com.ideas2it.training.patient.metrics.controller;
 
 
 import com.ideas2it.training.patient.metrics.model.patient.PatientInfoDocument;
-import com.ideas2it.training.patient.metrics.repository.PatientInfoSearchRepository;
 import com.ideas2it.training.patient.metrics.service.PatientSearchService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 

@@ -3,7 +3,6 @@ package com.ideas2it.training.patient.metrics.consumer;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ideas2it.training.patient.metrics.model.VitalSignResponse;
-import com.ideas2it.training.patient.metrics.repository.AuditDataRepository;
 import com.ideas2it.training.patient.metrics.repository.VitalSignsRepository;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.springframework.kafka.annotation.KafkaListener;
@@ -22,7 +21,7 @@ public class VitalSignConsumer {
 
     @KafkaListener(topics = "vital-signs-topic", groupId = "vital-sign-consumer-group")
     public void consume(ConsumerRecord<String, String> record) throws JsonProcessingException {
-        String response=record.value();
+        String response = record.value();
         VitalSignResponse vitalsSignResponse = objectMapper.readValue(response, VitalSignResponse.class);
         repository.save(vitalsSignResponse);
         System.out.println("Consumed message: " + vitalsSignResponse);

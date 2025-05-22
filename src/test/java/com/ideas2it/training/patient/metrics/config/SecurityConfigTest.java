@@ -7,7 +7,8 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 class SecurityConfigTest {
 
