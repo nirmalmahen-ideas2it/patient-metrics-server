@@ -1,0 +1,11 @@
+name: health-application
+services:
+  patient-metrics-server:
+    image: patient-metrics-server:latest
+    ports:
+      - "9093:9093"
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
+      VAULT_ROLE_ID: c8747e3b-1ef2-8c2b-92d9-67ff4986fe7d
+      VAULT_SECRET_ID: 900067f4-a2b5-b540-1c62-691fbcfca0ba
+      SPRING_DATA_ELASTICSEARCH_URIS: http://elasticsearch:9200

@@ -15,7 +15,11 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @DataElasticsearchTest
-@TestPropertySource(properties = "VAULT_URL=http://localhost:8200")
+@TestPropertySource(properties = {
+    "spring.cloud.config.enabled=false",
+    "spring.cloud.vault.enabled=false",
+    "spring.cloud.consul.enabled=false"
+})
 class PatientInfoSearchRepositoryTest {
 
     @Autowired

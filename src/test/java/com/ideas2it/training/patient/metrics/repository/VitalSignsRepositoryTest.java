@@ -13,7 +13,11 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @DataMongoTest
-@TestPropertySource(properties = "VAULT_URL=http://localhost:8200")
+@TestPropertySource(properties = {
+    "spring.cloud.config.enabled=false",
+    "spring.cloud.vault.enabled=false",
+    "spring.cloud.consul.enabled=false"
+})
 class VitalSignsRepositoryTest {
 
     @Autowired
