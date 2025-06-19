@@ -2,6 +2,7 @@ package com.ideas2it.training.patient.metrics.controller;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ideas2it.training.patient.metrics.model.AuditLogFilter;
 import com.ideas2it.training.patient.metrics.model.AuditPayload;
 import com.ideas2it.training.patient.metrics.service.AuditLogService;
 import org.junit.jupiter.api.BeforeEach;
@@ -107,7 +108,7 @@ class AuditLogControllerTest {
 
     @Test
     void testFilterAuditLogs() throws Exception {
-        Mockito.when(auditLogService.getFilteredAuditLogs(anyLong(), anyLong(), anyString(), any(LocalDateTime.class), any(LocalDateTime.class)))
+        Mockito.when(auditLogService.getFilteredAuditLogs(any(AuditLogFilter.class)))
             .thenReturn(Collections.singletonList(auditPayload));
 
         mockMvc.perform(get("/api/audit-logs/filter")

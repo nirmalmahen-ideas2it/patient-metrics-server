@@ -4,6 +4,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ideas2it.training.patient.metrics.model.VitalSignResponse;
 import com.ideas2it.training.patient.metrics.model.patient.PatientInfo;
+import com.ideas2it.training.patient.metrics.observer.VitalSignsMonitor;
+import com.ideas2it.training.patient.metrics.observer.VitalSignsObserver;
 import com.ideas2it.training.patient.metrics.repository.VitalSignsRepository;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.junit.jupiter.api.BeforeEach;
@@ -24,10 +26,13 @@ class VitalSignConsumerTest {
     @Mock
     private VitalSignsRepository mockRepository;
 
+    @Mock
+    private VitalSignsMonitor vitalSignsMonitor;
+
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        vitalSignConsumer = new VitalSignConsumer(mockObjectMapper, mockRepository);
+        vitalSignConsumer = new VitalSignConsumer(mockObjectMapper, mockRepository, vitalSignsMonitor);
     }
 
     @Test

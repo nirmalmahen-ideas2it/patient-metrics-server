@@ -1,5 +1,6 @@
 package com.ideas2it.training.patient.metrics.controller;
 
+import com.ideas2it.training.patient.metrics.model.AuditLogFilter;
 import com.ideas2it.training.patient.metrics.model.AuditPayload;
 import com.ideas2it.training.patient.metrics.service.AuditLogService;
 import lombok.RequiredArgsConstructor;
@@ -52,6 +53,13 @@ public class AuditLogController {
         @RequestParam(required = false) String entityType,
         @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime from,
         @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime to) {
-        return auditLogService.getFilteredAuditLogs(userId, patientId, entityType, from, to);
+        AuditLogFilter auditFilter = AuditLogFilter.builder()
+            .userId(userId)
+            .patientId(patientId)
+            .entityType(entityType)
+            .from(from)
+            .to(to)
+            .build();
+        return auditLogService.getFilteredAuditLogs(auditFilter);
     }
 }

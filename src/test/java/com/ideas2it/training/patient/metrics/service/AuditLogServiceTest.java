@@ -1,5 +1,6 @@
 package com.ideas2it.training.patient.metrics.service;
 
+import com.ideas2it.training.patient.metrics.model.AuditLogFilter;
 import com.ideas2it.training.patient.metrics.model.AuditPayload;
 import com.ideas2it.training.patient.metrics.repository.AuditDataRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -14,6 +15,7 @@ import java.util.Collections;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 class AuditLogServiceTest {
@@ -40,7 +42,7 @@ class AuditLogServiceTest {
         LocalDateTime to = LocalDateTime.now();
         AuditPayload payload = new AuditPayload();
         when(mockAuditRepository.findByUserIdAndLogDateBetween(userId, from, to))
-            .thenReturn(Collections.singletonList(payload));
+                .thenReturn(Collections.singletonList(payload));
 
         // Act
         List<AuditPayload> result = auditLogService.getLogsByUserIdAndDateRange(userId, from, to);
@@ -58,7 +60,7 @@ class AuditLogServiceTest {
         LocalDateTime to = LocalDateTime.now();
         AuditPayload payload = new AuditPayload();
         when(mockAuditRepository.findByPatientIdAndLogDateBetween(patientId, from, to))
-            .thenReturn(Collections.singletonList(payload));
+                .thenReturn(Collections.singletonList(payload));
 
         // Act
         List<AuditPayload> result = auditLogService.getLogsByPatientIdAndDateRange(patientId, from, to);
@@ -76,7 +78,7 @@ class AuditLogServiceTest {
         LocalDateTime to = LocalDateTime.now();
         AuditPayload payload = new AuditPayload();
         when(mockAuditRepository.findByEntityTypeAndLogDateBetween(entityType, from, to))
-            .thenReturn(Collections.singletonList(payload));
+                .thenReturn(Collections.singletonList(payload));
 
         // Act
         List<AuditPayload> result = auditLogService.getLogsByEntityTypeAndDateRange(entityType, from, to);
@@ -92,7 +94,7 @@ class AuditLogServiceTest {
         Long entityId = 301L;
         AuditPayload payload = new AuditPayload();
         when(mockAuditRepository.findByEntityId(entityId))
-            .thenReturn(Collections.singletonList(payload));
+                .thenReturn(Collections.singletonList(payload));
 
         // Act
         List<AuditPayload> result = auditLogService.getLogsByEntityId(entityId);
@@ -103,36 +105,30 @@ class AuditLogServiceTest {
     }
 
     @Test
-    void testGetFilteredAuditLogs_AllCriteria() {
-        // Arrange
-        Long userId = 101L;
-        Long patientId = 201L;
-        String entityType = "Patient";
-        LocalDateTime from = LocalDateTime.now().minusDays(5);
-        LocalDateTime to = LocalDateTime.now();
-        AuditPayload payload = new AuditPayload();
-        when(mockMongoTemplate.find(any(Query.class), eq(AuditPayload.class)))
-            .thenReturn(Collections.singletonList(payload));
+    void testGetFilteredAuditLogs_ValidFilter_ReturnsResults() {
+        AuditLogFilter filter = AuditLogFilter.builder()
+                .userId(1L)
+                .from(LocalDateTime.now().minusDays(1))
+                .to(LocalDateTime.now())
+                .build();
 
-        // Act
-        List<AuditPayload> result = auditLogService.getFilteredAuditLogs(userId, patientId, entityType, from, to);
+        List<AuditPayload> expected = Collections.singletonList(new AuditPayload());
+        when(mockMongoTemplate.find(any(Query.class), eq(AuditPayload.class))).thenReturn(expected);
 
-        // Assert
+        List<AuditPayload> result = auditLogService.getFilteredAuditLogs(filter);
+
         assertEquals(1, result.size());
-        verify(mockMongoTemplate).find(any(Query.class), eq(AuditPayload.class));
+        verify(mockMongoTemplate, times(1)).find(any(Query.class), eq(AuditPayload.class));
     }
 
     @Test
-    void testGetFilteredAuditLogs_NoCriteria() {
-        // Arrange
-        when(mockMongoTemplate.find(any(Query.class), eq(AuditPayload.class)))
-            .thenReturn(Collections.emptyList());
+    void testGetFilteredAuditLogs_InvalidUserId_ThrowsException() {
+        AuditLogFilter filter = AuditLogFilter.builder().userId(-1L).build();
+        assertThrows(IllegalArgumentException.class, () -> auditLogService.getFilteredAuditLogs(filter));
+    }
 
-        // Act
-        List<AuditPayload> result = auditLogService.getFilteredAuditLogs(null, null, null, null, null);
-
-        // Assert
-        assertEquals(0, result.size());
-        verify(mockMongoTemplate).find(any(Query.class), eq(AuditPayload.class));
+    @Test
+    void testGetFilteredAuditLogs_NullFilter_ThrowsException() {
+        assertThrows(IllegalArgumentException.class, () -> auditLogService.getFilteredAuditLogs(null));
     }
 }
