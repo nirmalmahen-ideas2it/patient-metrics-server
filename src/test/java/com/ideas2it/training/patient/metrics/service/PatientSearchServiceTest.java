@@ -4,144 +4,178 @@ import com.ideas2it.training.patient.metrics.model.patient.PatientInfoDocument;
 import com.ideas2it.training.patient.metrics.repository.PatientInfoSearchRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import java.time.LocalDate;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 class PatientSearchServiceTest {
 
-    private PatientSearchService patientSearchService;
-
     @Mock
-    private PatientInfoSearchRepository mockRepository;
+    private PatientInfoSearchRepository repository;
+
+    @InjectMocks
+    private PatientSearchService service;
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        patientSearchService = new PatientSearchService(mockRepository);
+    }
+
+    // --- searchByBirthDate ---
+    @Test
+    void testSearchByBirthDate_NullInput_ThrowsException() {
+        assertThrows(IllegalArgumentException.class, () -> service.searchByBirthDate(null));
     }
 
     @Test
-    void testSearchByBirthDate_Success() {
-        // Arrange
-        String dobString = "1990-05-15";
-        LocalDate dob = LocalDate.parse(dobString);
-        PatientInfoDocument patient = PatientInfoDocument.builder()
-            .id(1L)
-            .firstName("John")
-            .lastName("Doe")
-            .birthDate(dob)
-            .build();
-        when(mockRepository.findByBirthDate(dob)).thenReturn(Collections.singletonList(patient));
-
-        // Act
-        List<PatientInfoDocument> results = patientSearchService.searchByBirthDate(dobString);
-
-        // Assert
-        assertEquals(1, results.size());
-        assertEquals("John", results.get(0).getFirstName());
-        verify(mockRepository).findByBirthDate(dob);
+    void testSearchByBirthDate_EmptyInput_ThrowsException() {
+        assertThrows(IllegalArgumentException.class, () -> service.searchByBirthDate("   "));
     }
 
     @Test
-    void testSearchByBirthDate_NoResults() {
-        // Arrange
-        String dobString = "2000-01-01";
-        LocalDate dob = LocalDate.parse(dobString);
-        when(mockRepository.findByBirthDate(dob)).thenReturn(Collections.emptyList());
-
-        // Act
-        List<PatientInfoDocument> results = patientSearchService.searchByBirthDate(dobString);
-
-        // Assert
-        assertEquals(0, results.size());
-        verify(mockRepository).findByBirthDate(dob);
+    void testSearchByBirthDate_InvalidFormat_ThrowsException() {
+        assertThrows(IllegalArgumentException.class, () -> service.searchByBirthDate("not-a-date"));
     }
 
     @Test
-    void testFindByFirstNameContainingIgnoreCase_Success() {
-        // Arrange
-        String name = "john";
-        PatientInfoDocument patient1 = PatientInfoDocument.builder()
-            .id(1L)
-            .firstName("John")
-            .lastName("Doe")
-            .build();
-        PatientInfoDocument patient2 = PatientInfoDocument.builder()
-            .id(2L)
-            .firstName("Johnny")
-            .lastName("Smith")
-            .build();
-        when(mockRepository.findByFirstNameContainingIgnoreCase(name)).thenReturn(Arrays.asList(patient1, patient2));
-
-        // Act
-        List<PatientInfoDocument> results = patientSearchService.findByFirstNameContainingIgnoreCase(name);
-
-        // Assert
-        assertEquals(2, results.size());
-        verify(mockRepository).findByFirstNameContainingIgnoreCase(name);
+    void testSearchByBirthDate_NonExistentDate_ThrowsException() {
+        assertThrows(IllegalArgumentException.class, () -> service.searchByBirthDate("2023-02-30"));
     }
 
     @Test
-    void testFindByLastNameContainingIgnoreCase_Success() {
-        // Arrange
-        String name = "doe";
-        PatientInfoDocument patient = PatientInfoDocument.builder()
-            .id(1L)
-            .firstName("John")
-            .lastName("Doe")
-            .build();
-        when(mockRepository.findByLastNameContainingIgnoreCase(name)).thenReturn(Collections.singletonList(patient));
-
-        // Act
-        List<PatientInfoDocument> results = patientSearchService.findByLastNameContainingIgnoreCase(name);
-
-        // Assert
-        assertEquals(1, results.size());
-        assertEquals("Doe", results.get(0).getLastName());
-        verify(mockRepository).findByLastNameContainingIgnoreCase(name);
+    void testSearchByBirthDate_FutureDate_LogsWarningAndReturns() {
+        LocalDate future = LocalDate.now().plusYears(10);
+        when(repository.findByBirthDate(future)).thenReturn(Collections.emptyList());
+        List<PatientInfoDocument> result = service.searchByBirthDate(future.toString());
+        assertNotNull(result);
+        assertTrue(result.isEmpty());
     }
 
     @Test
-    void testFindByMedicalRecordNumber_Success() {
-        // Arrange
-        String mrn = "MRN123";
-        PatientInfoDocument patient = PatientInfoDocument.builder()
-            .id(1L)
-            .firstName("John")
-            .lastName("Doe")
-            .medicalRecordNumber(mrn)
-            .build();
-        when(mockRepository.findByMedicalRecordNumber(mrn)).thenReturn(Collections.singletonList(patient));
-
-        // Act
-        List<PatientInfoDocument> results = patientSearchService.findByMedicalRecordNumber(mrn);
-
-        // Assert
-        assertEquals(1, results.size());
-        assertEquals("MRN123", results.get(0).getMedicalRecordNumber());
-        verify(mockRepository).findByMedicalRecordNumber(mrn);
+    void testSearchByBirthDate_OldDate_LogsWarningAndReturns() {
+        LocalDate old = LocalDate.of(1800, 1, 1);
+        when(repository.findByBirthDate(old)).thenReturn(Collections.emptyList());
+        List<PatientInfoDocument> result = service.searchByBirthDate(old.toString());
+        assertNotNull(result);
+        assertTrue(result.isEmpty());
     }
 
     @Test
-    void testFindByMedicalRecordNumber_NoResults() {
-        // Arrange
-        String mrn = "INVALID_MRN";
-        when(mockRepository.findByMedicalRecordNumber(mrn)).thenReturn(Collections.emptyList());
+    void testSearchByBirthDate_RepositoryError_ThrowsException() {
+        LocalDate date = LocalDate.of(2000, 1, 1);
+        when(repository.findByBirthDate(date)).thenThrow(new RuntimeException("DB error"));
+        assertThrows(PatientSearchException.class, () -> service.searchByBirthDate(date.toString()));
+    }
 
-        // Act
-        List<PatientInfoDocument> results = patientSearchService.findByMedicalRecordNumber(mrn);
+    @Test
+    void testSearchByBirthDate_Valid_ReturnsResults() {
+        LocalDate date = LocalDate.of(2000, 1, 1);
+        PatientInfoDocument doc = new PatientInfoDocument();
+        when(repository.findByBirthDate(date)).thenReturn(Collections.singletonList(doc));
+        List<PatientInfoDocument> result = service.searchByBirthDate(date.toString());
+        assertEquals(1, result.size());
+    }
 
-        // Assert
-        assertEquals(0, results.size());
-        verify(mockRepository).findByMedicalRecordNumber(mrn);
+    // --- findByFirstNameContainingIgnoreCase ---
+    @Test
+    void testFindByFirstNameContainingIgnoreCase_Null_ThrowsException() {
+        assertThrows(IllegalArgumentException.class, () -> service.findByFirstNameContainingIgnoreCase(null));
+    }
+
+    @Test
+    void testFindByFirstNameContainingIgnoreCase_Empty_ThrowsException() {
+        assertThrows(IllegalArgumentException.class, () -> service.findByFirstNameContainingIgnoreCase("   "));
+    }
+
+    @Test
+    void testFindByFirstNameContainingIgnoreCase_TooLong_ThrowsException() {
+        String longName = "a".repeat(101);
+        assertThrows(IllegalArgumentException.class, () -> service.findByFirstNameContainingIgnoreCase(longName));
+    }
+
+    @Test
+    void testFindByFirstNameContainingIgnoreCase_SpecialChars() {
+        String name = "O'Reilly";
+        when(repository.findByFirstNameContainingIgnoreCase(name)).thenReturn(Collections.emptyList());
+        List<PatientInfoDocument> result = service.findByFirstNameContainingIgnoreCase(name);
+        assertNotNull(result);
+    }
+
+    @Test
+    void testFindByFirstNameContainingIgnoreCase_RepositoryError_ThrowsException() {
+        String name = "John";
+        when(repository.findByFirstNameContainingIgnoreCase(name)).thenThrow(new RuntimeException("DB error"));
+        assertThrows(PatientSearchException.class, () -> service.findByFirstNameContainingIgnoreCase(name));
+    }
+
+    // --- findByLastNameContainingIgnoreCase ---
+    @Test
+    void testFindByLastNameContainingIgnoreCase_Null_ThrowsException() {
+        assertThrows(IllegalArgumentException.class, () -> service.findByLastNameContainingIgnoreCase(null));
+    }
+
+    @Test
+    void testFindByLastNameContainingIgnoreCase_Empty_ThrowsException() {
+        assertThrows(IllegalArgumentException.class, () -> service.findByLastNameContainingIgnoreCase("   "));
+    }
+
+    @Test
+    void testFindByLastNameContainingIgnoreCase_TooLong_ThrowsException() {
+        String longName = "b".repeat(101);
+        assertThrows(IllegalArgumentException.class, () -> service.findByLastNameContainingIgnoreCase(longName));
+    }
+
+    @Test
+    void testFindByLastNameContainingIgnoreCase_SpecialChars() {
+        String name = "Smith-Jones";
+        when(repository.findByLastNameContainingIgnoreCase(name)).thenReturn(Collections.emptyList());
+        List<PatientInfoDocument> result = service.findByLastNameContainingIgnoreCase(name);
+        assertNotNull(result);
+    }
+
+    @Test
+    void testFindByLastNameContainingIgnoreCase_RepositoryError_ThrowsException() {
+        String name = "Doe";
+        when(repository.findByLastNameContainingIgnoreCase(name)).thenThrow(new RuntimeException("DB error"));
+        assertThrows(PatientSearchException.class, () -> service.findByLastNameContainingIgnoreCase(name));
+    }
+
+    // --- findByMedicalRecordNumber ---
+    @Test
+    void testFindByMedicalRecordNumber_Null_ThrowsException() {
+        assertThrows(IllegalArgumentException.class, () -> service.findByMedicalRecordNumber(null));
+    }
+
+    @Test
+    void testFindByMedicalRecordNumber_Empty_ThrowsException() {
+        assertThrows(IllegalArgumentException.class, () -> service.findByMedicalRecordNumber("   "));
+    }
+
+    @Test
+    void testFindByMedicalRecordNumber_TooLong_ThrowsException() {
+        String longMrn = "c".repeat(101);
+        assertThrows(IllegalArgumentException.class, () -> service.findByMedicalRecordNumber(longMrn));
+    }
+
+    @Test
+    void testFindByMedicalRecordNumber_SpecialChars() {
+        String mrn = "MRN-1234/2023";
+        when(repository.findByMedicalRecordNumber(mrn)).thenReturn(Collections.emptyList());
+        List<PatientInfoDocument> result = service.findByMedicalRecordNumber(mrn);
+        assertNotNull(result);
+    }
+
+    @Test
+    void testFindByMedicalRecordNumber_RepositoryError_ThrowsException() {
+        String mrn = "MRN-1";
+        when(repository.findByMedicalRecordNumber(mrn)).thenThrow(new RuntimeException("DB error"));
+        assertThrows(PatientSearchException.class, () -> service.findByMedicalRecordNumber(mrn));
     }
 }
